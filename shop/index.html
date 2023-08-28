@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shop</title>
+  </head>
+
+  <body>
+    <h1>This is Shop</h1>
+    <div>
+      <button onclick="login('a')">A 登录</button>
+      <button onclick="login('b')">B 登录</button>
+      <button onclick="login('c')">C 登录</button>
+      <button onclick="logout()">退出</button>
+    </div>
+    <div>
+      登录用户
+      <span id="user"></span>
+    </div>
+    <div>
+      <h2>文章列表</h2>
+      <button onclick="getArticles()">获取文章</button>
+      <button onclick="deleteArticle()">删除文章「最后一个」</button>
+      <pre id="articles"></pre>
+    </div>
+    <script>
+      const $user = document.getElementById("user")
+      const $articles = document.getElementById("articles")
+
+      async function login(user) {
+        // json
+        const res = await fetch("/api/login", {
+          method: "POST",
+          body: JSON.stringify({
+            user,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+
+        if (res.ok) {
+          $user.innerText = user
+        }
+      }
+
+      async function logout() {
+        // 清理 cookie
+        const res = await fetch("/api/logout")
+        if (res.ok) {
+          $user.innerText = ""
+        }
+      }
+
+      async function getArticles() {
+        const res = await fetch("/api/articles")
+        if (res.ok) {
+          const json = await res.json()
+          $articles.innerText = JSON.stringify(json, null, 2)
+        } else {
+          $articles.innerText = ""
+        }
+      }
+
+      async function deleteArticle() {
+        const res = await fetch("/api/articles", {
+          method: "DELETE",
+        })
+      }
+    </script>
+  </body>
+</html>
